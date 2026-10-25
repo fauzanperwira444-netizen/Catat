@@ -3,16 +3,16 @@ CREATE TABLE `daily_todos` (
 	`date` text NOT NULL,
 	`locked_at` integer,
 	`auto_locked` integer DEFAULT false NOT NULL,
-	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `daily_todos_date_unique` ON `daily_todos` (`date`);--> statement-breakpoint
 CREATE TABLE `labels` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
-	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `labels_name_unique` ON `labels` (`name`);--> statement-breakpoint
@@ -23,8 +23,8 @@ CREATE TABLE `progress_logs` (
 	`before` integer NOT NULL,
 	`after` integer NOT NULL,
 	`description` text NOT NULL,
-	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
 	FOREIGN KEY (`task_id`) REFERENCES `tasks`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -39,8 +39,8 @@ CREATE TABLE `projects` (
 	`color` text NOT NULL,
 	`completed_early_at` integer,
 	`canceled_at` integer,
-	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `sessions` (
@@ -52,8 +52,8 @@ CREATE TABLE `sessions` (
 	`description` text DEFAULT '' NOT NULL,
 	`goals` text DEFAULT '' NOT NULL,
 	`canceled_at` integer,
-	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
 	FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -70,8 +70,8 @@ CREATE TABLE `tasks` (
 	`progress` integer DEFAULT 0 NOT NULL,
 	`done_at` integer,
 	`canceled_at` integer,
-	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
 	FOREIGN KEY (`session_id`) REFERENCES `sessions`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`label_id`) REFERENCES `labels`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -86,8 +86,8 @@ CREATE TABLE `todo_items` (
 	`task_id` text NOT NULL,
 	`order` integer NOT NULL,
 	`checked` integer DEFAULT false NOT NULL,
-	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
 	FOREIGN KEY (`todo_id`) REFERENCES `daily_todos`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`task_id`) REFERENCES `tasks`(`id`) ON UPDATE no action ON DELETE no action
 );

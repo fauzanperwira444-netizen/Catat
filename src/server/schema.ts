@@ -17,11 +17,9 @@ const id = () =>
 const timestamps = {
   createdAt: integer('created_at', { mode: 'timestamp_ms' })
     .notNull()
-    .default(sql`(unixepoch() * 1000)`)
     .$defaultFn(() => now()),
   updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
     .notNull()
-    .default(sql`(unixepoch() * 1000)`)
     .$defaultFn(() => now())
     .$onUpdateFn(() => now()),
 };

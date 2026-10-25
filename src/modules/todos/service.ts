@@ -6,6 +6,7 @@ import { dailyTodos, progressLogs, tasks, todoItems } from '@/server/schema';
 import { DomainError } from '@/shared/errors';
 import type { DomainEvent } from '@/shared/events';
 import { addDays, fmtShort, isDateStr, now, type DateStr } from '@/shared/time';
+import { compareTasks } from '@/shared/sort';
 import { loadTaskViews, taskStatus, type TaskView } from '@/modules/tasks/views';
 import { ensureTodo, getTodoByDate, removeFromUpcomingTodos } from './repo';
 
@@ -49,9 +50,11 @@ export async function getTodo(ctx: Ctx, date: DateStr, today: DateStr): Promise<
     lockedAt: todo.lockedAt,
     autoLocked: todo.autoLocked,
     state,
+    // FR-23: tampil urut deadline, kesulitan, lalu jam.
     items: items
       .filter((i) => byId.has(i.taskId))
-      .map((i) => ({ itemId: i.id, order: i.order, checked: i.checked, task: byId.get(i.taskId)! })),
+      .map((i) => ({ itemId: i.id, order: i.order, checked: i.checked, task: byId.get(i.taskId)! }))
+      .sort((a, b) => compareTasks(a.task, b.task)),
   };
 }
 
@@ -199,6 +202,15 @@ export async function updateProgress(ctx: Ctx, raw: ProgressInput, today: DateSt
   }
   if (!isDone && wasDone) events.push({ type: 'TaskDibukaKembali', taskId: t.id });
   return events;
+}
+
+export async function hasStaleTodos(ctx: Ctx, today: DateStr) {
+  const rows = await ctx.db
+    .select({ id: dailyTodos.id })
+    .from(dailyTodos)
+    .where(and(lt(dailyTodos.date, today), isNull(dailyTodos.lockedAt)))
+    .limit(1);
+  return rows.length > 0;
 }
 
 /**

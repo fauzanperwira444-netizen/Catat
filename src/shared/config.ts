@@ -15,10 +15,7 @@ export function backupDir(): string {
   return path.join(dataDir(), 'cadangan');
 }
 
-/** Zona waktu Catat. Default Asia/Jakarta (NFR-14), bisa diubah lewat konfigurasi. */
-export function timeZone(): string {
-  return process.env.CATAT_TIMEZONE?.trim() || 'Asia/Jakarta';
-}
+export { timeZone } from './tz';
 
 /** Versi format file ekspor. Naikkan saat struktur data berubah. */
 export const EXPORT_FORMAT_VERSION = 1;

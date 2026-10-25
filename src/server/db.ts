@@ -50,10 +50,17 @@ export async function getCtx(): Promise<Ctx> {
   return { db: await getDb(), userId: null };
 }
 
+// Catat dipakai satu orang di satu proses. Transaksi tulis dijalankan berurutan
+// supaya tidak saling mengunci file SQLite (SQLITE_BUSY).
+const lock = globalThis as unknown as { __catatTx?: Promise<unknown> };
+
 /** Jalankan fungsi di dalam satu transaksi, dengan konteks transaksi. */
 export async function inTransaction<T>(fn: (ctx: Ctx) => Promise<T>): Promise<T> {
   const db = await getDb();
-  return db.transaction(async (tx) => fn({ db: tx, userId: null }));
+  const prev = lock.__catatTx ?? Promise.resolve();
+  const run = prev.catch(() => {}).then(() => db.transaction(async (tx) => fn({ db: tx, userId: null })));
+  lock.__catatTx = run.catch(() => {});
+  return run;
 }
 
 /** Tutup koneksi. Dipakai saat pengujian dan saat pemulihan data. */

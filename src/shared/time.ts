@@ -1,6 +1,6 @@
 // Tanggal kalender di Catat selalu berupa teks YYYY-MM-DD dalam zona waktu Catat.
 // Semua perhitungan "hari ini" lewat modul ini supaya bisa diatur saat pengujian.
-import { timeZone } from './config';
+import { timeZone } from './tz';
 
 export type DateStr = string; // YYYY-MM-DD
 

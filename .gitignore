@@ -3,7 +3,7 @@ node_modules
 out
 .env
 .env.local
-data/
+/data/
 *.db
 *.db-journal
 test-results/
